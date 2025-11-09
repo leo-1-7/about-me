@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Leo Paul Yamaguchi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .progress-container {
+            position: absolute;
+            bottom: 30%;
+            width: 80%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease-out;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: shimmer 2s linear infinite;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: 300;
+            display: inline-block;
+            animation: wave 1.4s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes wave {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .loading-percentage {
+            color: white;
+            font-size: 36px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-in 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .main-button {
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .main-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .main-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-button:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-about {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-favorites {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 90%;
+            max-width: 800px;
+            min-height: 80vh;
+            border-radius: 20px;
+            padding: 50px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-about {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .modal-favorites {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            margin-top: 20px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .modal-text {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-action-button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-exit {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-action-button:active {
+            transform: translateY(0);
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateX(10px);
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .favorite-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .favorite-card.clickable {
+            cursor: pointer;
+        }
+
+        .modal-gaming {
+            background: linear-gradient(135deg, #ffd89b 0%, #ff9a56 100%);
+        }
+
+        .modal-music {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+        }
+
+        .gaming-image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .gaming-title {
+            text-align: left;
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gaming-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gaming-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .gaming-click-button {
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .btn-click-me {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #808080;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-click-me:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-click-me:active {
+            transform: translateY(-1px);
+        }
+
+        .gaming-link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            background: #808080;
+            color: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .gaming-link-button:hover {
+            background: #707070;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .gaming-link-button:active {
+            transform: translateY(0);
+        }
+
+        .music-player-container {
+            margin: 20px 0;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .play-button, .music-control-button {
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            background: #808080;
+            color: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+
+        .music-control-button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .play-button:hover, .music-control-button:hover {
+            background: #707070;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-button:active, .music-control-button:active {
+            transform: translateY(0);
+        }
+
+        .music-progress-container {
+            width: 100%;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .music-progress-container.active {
+            display: block;
+        }
+
+        .music-progress-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .music-progress-bar {
+            height: 100%;
+            background: #808080;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .music-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .music-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .music-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .music-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .music-list::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .music-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .song-item {
+            margin-bottom: 20px;
+        }
+
+        .song-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .music-info-button {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+            width: 45px;
+            height: 45px;
+            border: 3px solid #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            z-index: 10002;
+        }
+
+        .music-info-button:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            border-color: #ff5252;
+        }
+
+        .music-info-button:active {
+            transform: scale(1.05);
+        }
+
+        .music-disclaimer-box {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            max-width: 90%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            text-align: center;
+            font-style: italic;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.6;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-disclaimer-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .disclaimer-button {
+            margin-top: 15px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #808080;
+            color: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            font-style: normal;
+        }
+
+        .disclaimer-button:hover {
+            background: #707070;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .disclaimer-button:active {
+            transform: translateY(0);
+        }
+
+        .hidden-link {
+            display: none;
+        }
+
+        .favorite-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .favorite-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .favorite-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .modal-box {
+                width: 95%;
+                padding: 30px 20px;
+                min-height: 70vh;
+            }
+
+
+            .modal-title {
+                font-size: 28px;
+                margin-bottom: 15px;
+            }
+
+            .info-value {
+                font-size: 16px;
+            }
+
+            .info-label {
+                font-size: 12px;
+            }
+
+            .main-button {
+                padding: 15px 40px;
+                font-size: 18px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-action-button {
+                width: 100%;
+            }
+
+            .progress-container {
+                width: 90%;
+                bottom: 25%;
+            }
+
+            .loading-percentage {
+                font-size: 28px;
+            }
+
+            .loading-text {
+                font-size: 20px;
+            }
+
+            .loading-dots span {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="progress-container">
+            <div class="loading-text">Loading<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="button-container">
+            <button class="main-button btn-about" onclick="openModal('about')">About Me</button>
+            <button class="main-button btn-favorites" onclick="openModal('favorites')">My Favorites</button>
+        </div>
+    </div>
+
+    <!-- About Me Modal -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal-box modal-about">
+            <h1 class="modal-title">About Me</h1>
+            <div class="modal-content">
+                <div class="info-item">
+                    <div class="info-label">Name</div>
+                    <div class="info-value">Leo Paul Yamaguchi</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Age</div>
+                    <div class="info-value">17 Years Old</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Birth</div>
+                    <div class="info-value">March 15, 2008</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Birthplace</div>
+                    <div class="info-value">Rafael S. Tumbukon Memorial Hospital</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Hobbies</div>
+                    <div class="info-value">Playing Online Games, Listening to Music</div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-action-button btn-back" onclick="closeModal('about')">Back to Main Menu</button>
+                    <button class="modal-action-button btn-exit" onclick="exitPage()">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Favorites Modal -->
+    <div class="modal-overlay" id="favoritesModal">
+        <div class="modal-box modal-favorites">
+            <div class="modal-content">
+                <h2 style="text-align: center; font-size: 32px; margin-bottom: 30px; color: #333; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">My Favorites</h2>
+                <div class="favorites-grid">
+                    <div class="favorite-card clickable" onclick="openModal('gaming')">
+                        <div class="favorite-icon">🎮</div>
+                        <div class="favorite-title">Gaming</div>
+                        <div class="favorite-description">When i got so bored, i play this games.</div>
+                    </div>
+                    <div class="favorite-card clickable" onclick="openModal('music')">
+                        <div class="favorite-icon">🎵</div>
+                        <div class="favorite-title">Music</div>
+                        <div class="favorite-description">When I'm sleeping, eating, walking, etc., I play this music.</div>
+                    </div>
+                    <div class="favorite-card">
+                        <div class="favorite-icon">💻</div>
+                        <div class="favorite-title">Technology</div>
+                        <div class="favorite-description">Fascinated by the latest tech trends and innovations</div>
+                    </div>
+                    <div class="favorite-card">
+                        <div class="favorite-icon">🌟</div>
+                        <div class="favorite-title">Adventure</div>
+                        <div class="favorite-description">Always ready for new experiences and challenges</div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-action-button btn-back" onclick="closeModal('favorites')">Back to Main Menu</button>
+                    <button class="modal-action-button btn-exit" onclick="exitPage()">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gaming Modal -->
+    <div class="modal-overlay" id="gamingModal">
+        <div class="modal-box modal-gaming">
+            <h1 class="modal-title">Gaming</h1>
+            <div class="modal-content">
+                <div class="info-item">
+                    <div class="info-label">MOBILE LEGENDS: BANG BANG</div>
+                    <div class="info-value">
+                        <a href="https://play.google.com/store/apps/details?id=com.mobile.legends&pcampaignid=web_share" target="_blank" class="gaming-link-button">Click Me</a>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">ROBLOX</div>
+                    <div class="info-value">
+                        <a href="https://play.google.com/store/apps/details?id=com.roblox.client&pcampaignid=web_share" target="_blank" class="gaming-link-button">Click Me</a>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-action-button btn-back" onclick="closeModal('gaming')">Back to Main Menu</button>
+                    <button class="modal-action-button btn-exit" onclick="exitPage()">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Modal -->
+    <div class="modal-overlay" id="musicModal">
+        <div class="modal-box modal-music">
+            <button class="music-info-button" onclick="toggleDisclaimer()" title="Disclaimer">!</button>
+            <div class="music-disclaimer-box" id="musicDisclaimer">
+                <p>I DON'T OWN THE RIGHTS TO THE MUSIC USED HERE. ALL CREDITS AND RIGHTS TO THE RESPECTIVE ARTISTS AND COPYRIGHT HOLDERS. SHARED PURELY FOR APPRECIATION AND INSPIRATION.</p>
+                <button class="disclaimer-button" onclick="toggleDisclaimer()">Understood</button>
+            </div>
+            <h1 class="modal-title">Music</h1>
+            <div class="modal-content">
+                <div class="music-list">
+                    <div class="info-item song-item">
+                        <div class="info-label">SABRINA CARPENTER - WHEN DID YOU GET HOT</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('sabrina', -5)">-5s</button>
+                                    <button class="play-button" data-song="sabrina" onclick="toggleMusic('sabrina')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('sabrina', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('sabrina')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-sabrina" preload="metadata">
+                                    <source src="Music/Sabrina Carpenter - When Did You Get Hot_ (Lyrics).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-sabrina">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-sabrina"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-sabrina">0:00</span>
+                                        <span id="totalTime-sabrina">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">ARIANA GRANDE - POSITIONS</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('positions', -5)">-5s</button>
+                                    <button class="play-button" data-song="positions" onclick="toggleMusic('positions')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('positions', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('positions')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-positions" preload="metadata">
+                                    <source src="Music/Ariana Grande - positions (Lyrics).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-positions">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-positions"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-positions">0:00</span>
+                                        <span id="totalTime-positions">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">ARIANA GRANDE - BREAK FREE</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('breakfree', -5)">-5s</button>
+                                    <button class="play-button" data-song="breakfree" onclick="toggleMusic('breakfree')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('breakfree', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('breakfree')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-breakfree" preload="metadata">
+                                    <source src="Music/Ariana Grande - Break Free (Lyrics).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-breakfree">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-breakfree"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-breakfree">0:00</span>
+                                        <span id="totalTime-breakfree">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">TAYLOR SWIFT - OPALITE</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('opalite', -5)">-5s</button>
+                                    <button class="play-button" data-song="opalite" onclick="toggleMusic('opalite')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('opalite', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('opalite')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-opalite" preload="metadata">
+                                    <source src="Music/Taylor Swift - Opalite (Lyrics).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-opalite">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-opalite"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-opalite">0:00</span>
+                                        <span id="totalTime-opalite">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">TAYLOR SWIFT - THE FATE OF OPHELIA</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('opheila', -5)">-5s</button>
+                                    <button class="play-button" data-song="opheila" onclick="toggleMusic('opheila')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('opheila', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('opheila')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-opheila" preload="metadata">
+                                    <source src="Music/Taylor Swift - The Fate of Ophelia.mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-opheila">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-opheila"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-opheila">0:00</span>
+                                        <span id="totalTime-opheila">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">THE WEEKND - IS THERE SOMEONE ELSE</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('weeknd', -5)">-5s</button>
+                                    <button class="play-button" data-song="weeknd" onclick="toggleMusic('weeknd')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('weeknd', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('weeknd')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-weeknd" preload="metadata">
+                                    <source src="Music/The Weeknd - Is There Someone Else_ (Audio).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-weeknd">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-weeknd"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-weeknd">0:00</span>
+                                        <span id="totalTime-weeknd">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">YENG CONSTANTINO - COOL OFF</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('cooloff', -5)">-5s</button>
+                                    <button class="play-button" data-song="cooloff" onclick="toggleMusic('cooloff')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('cooloff', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('cooloff')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-cooloff" preload="metadata">
+                                    <source src="Music/Cool Off - Yeng Constantino (Lyrics).mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-cooloff">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-cooloff"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-cooloff">0:00</span>
+                                        <span id="totalTime-cooloff">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item song-item">
+                        <div class="info-label">JUSTIN BIEBER - CONFIDENT</div>
+                        <div class="info-value">
+                            <div class="music-player-container">
+                                <div class="song-controls">
+                                    <button class="music-control-button" onclick="skipMusic('confident', -5)">-5s</button>
+                                    <button class="play-button" data-song="confident" onclick="toggleMusic('confident')">▶️</button>
+                                    <button class="music-control-button" onclick="skipMusic('confident', 5)">+5s</button>
+                                    <button class="music-control-button" onclick="restartMusic('confident')">🔄</button>
+                                </div>
+                                <audio id="musicPlayer-confident" preload="metadata">
+                                    <source src="Music/Justin Bieber - Confident (Lyrics) she said its her first time.mp3" type="audio/mpeg">
+                                </audio>
+                                <div class="music-progress-container" id="musicProgressContainer-confident">
+                                    <div class="music-progress-bar-wrapper">
+                                        <div class="music-progress-bar" id="musicProgressBar-confident"></div>
+                                    </div>
+                                    <div class="music-time">
+                                        <span id="currentTime-confident">0:00</span>
+                                        <span id="totalTime-confident">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-action-button btn-back" onclick="closeModal('music')">Back to Main Menu</button>
+                    <button class="modal-action-button btn-exit" onclick="exitPage()">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Loading Screen with Percentage and Progress Bar
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingPercentage = document.getElementById('loadingPercentage');
+            const progressBar = document.getElementById('progressBar');
+            const duration = 15000; // 15 seconds
+            const updateInterval = 30; // Update every 30ms for smooth animation
+            const totalSteps = duration / updateInterval;
+            let currentStep = 0;
+            
+            function updatePercentage() {
+                currentStep++;
+                const progress = Math.min(currentStep / totalSteps, 1);
+                
+                // Use a gentle easing function (ease-out) - smoother than before
+                const easedProgress = 1 - Math.pow(1 - progress, 1.5);
+                
+                // Calculate percentage (0-100)
+                const percentage = Math.min(100, Math.floor(easedProgress * 100));
+                const widthPercentage = easedProgress * 100;
+                
+                // Update percentage text
+                loadingPercentage.textContent = percentage + '%';
+                
+                // Update progress bar width
+                progressBar.style.width = widthPercentage + '%';
+                
+                if (progress < 1) {
+                    setTimeout(updatePercentage, updateInterval);
+                } else {
+                    // Ensure it ends at exactly 100%
+                    loadingPercentage.textContent = '100%';
+                    progressBar.style.width = '100%';
+                    setTimeout(function() {
+                        loadingScreen.classList.add('hidden');
+                    }, 300);
+                }
+            }
+            
+            updatePercentage();
+        });
+
+        // Modal Functions
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Stop all music if closing music modal
+            if (type === 'music') {
+                const songIds = ['sabrina', 'positions', 'breakfree', 'opalite', 'opheila', 'weeknd', 'cooloff', 'confident'];
+                songIds.forEach(songId => {
+                    const audio = document.getElementById('musicPlayer-' + songId);
+                    if (audio && !audio.paused) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        const playButton = document.querySelector(`button[data-song="${songId}"]`);
+                        if (playButton) playButton.textContent = '▶️';
+                        const progressContainer = document.getElementById('musicProgressContainer-' + songId);
+                        if (progressContainer) progressContainer.classList.remove('active');
+                        const progressBar = document.getElementById('musicProgressBar-' + songId);
+                        if (progressBar) progressBar.style.width = '0%';
+                        const currentTime = document.getElementById('currentTime-' + songId);
+                        if (currentTime) currentTime.textContent = '0:00';
+                    }
+                });
+            }
+        }
+
+        function closeModalOnOverlay(event, type) {
+            if (event.target === event.currentTarget) {
+                closeModal(type);
+            }
+        }
+
+        // Exit page function
+        function exitPage() {
+            // Try to close the window/tab
+            window.close();
+            // If window.close() doesn't work (browser blocks it), redirect to blank page
+            setTimeout(function() {
+                window.location.href = 'about:blank';
+            }, 100);
+        }
+
+        // Music Player Functions
+        let currentPlayingSong = null;
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // Set up event handlers for all audio players
+        window.addEventListener('load', function() {
+            const songIds = ['sabrina', 'positions', 'breakfree', 'opalite', 'opheila', 'weeknd', 'cooloff', 'confident'];
+            songIds.forEach(songId => {
+                const audio = document.getElementById('musicPlayer-' + songId);
+                if (audio) {
+                    audio.addEventListener('loadedmetadata', function() {
+                        const totalTimeSpan = document.getElementById('totalTime-' + songId);
+                        if (totalTimeSpan) {
+                            totalTimeSpan.textContent = formatTime(audio.duration);
+                        }
+                    });
+
+                    audio.addEventListener('timeupdate', function() {
+                        const progressBar = document.getElementById('musicProgressBar-' + songId);
+                        const currentTimeSpan = document.getElementById('currentTime-' + songId);
+                        const totalTimeSpan = document.getElementById('totalTime-' + songId);
+                        
+                        if (audio.duration) {
+                            const progress = (audio.currentTime / audio.duration) * 100;
+                            if (progressBar) progressBar.style.width = progress + '%';
+                            if (currentTimeSpan) currentTimeSpan.textContent = formatTime(audio.currentTime);
+                            if (totalTimeSpan && totalTimeSpan.textContent === '0:00') {
+                                totalTimeSpan.textContent = formatTime(audio.duration);
+                            }
+                        }
+                    });
+
+                    audio.addEventListener('ended', function() {
+                        const playButton = document.querySelector(`button[data-song="${songId}"]`);
+                        if (playButton) playButton.textContent = '▶️';
+                        const progressContainer = document.getElementById('musicProgressContainer-' + songId);
+                        if (progressContainer) progressContainer.classList.remove('active');
+                        currentPlayingSong = null;
+                    });
+                }
+            });
+        });
+
+        function toggleMusic(songId) {
+            const audio = document.getElementById('musicPlayer-' + songId);
+            const playButton = document.querySelector(`button[data-song="${songId}"]`);
+            const progressContainer = document.getElementById('musicProgressContainer-' + songId);
+
+            if (!audio || !playButton) return;
+
+            // If a different song is playing, pause it
+            if (currentPlayingSong && currentPlayingSong !== songId) {
+                const prevAudio = document.getElementById('musicPlayer-' + currentPlayingSong);
+                const prevButton = document.querySelector(`button[data-song="${currentPlayingSong}"]`);
+                const prevProgress = document.getElementById('musicProgressContainer-' + currentPlayingSong);
+                if (prevAudio) prevAudio.pause();
+                if (prevButton) prevButton.textContent = '▶️';
+                if (prevProgress) prevProgress.classList.remove('active');
+            }
+
+            if (audio.paused) {
+                audio.play();
+                playButton.textContent = '⏸️';
+                progressContainer.classList.add('active');
+                currentPlayingSong = songId;
+            } else {
+                audio.pause();
+                playButton.textContent = '▶️';
+                progressContainer.classList.remove('active');
+                currentPlayingSong = null;
+            }
+        }
+
+        function skipMusic(songId, seconds) {
+            const audio = document.getElementById('musicPlayer-' + songId);
+            if (audio && audio.duration) {
+                const newTime = Math.max(0, Math.min(audio.currentTime + seconds, audio.duration));
+                audio.currentTime = newTime;
+            }
+        }
+
+        function restartMusic(songId) {
+            const audio = document.getElementById('musicPlayer-' + songId);
+            if (audio) {
+                audio.currentTime = 0;
+                if (!audio.paused) {
+                    audio.play();
+                }
+            }
+        }
+
+        function toggleDisclaimer() {
+            const disclaimer = document.getElementById('musicDisclaimer');
+            if (disclaimer) {
+                disclaimer.classList.toggle('show');
+            }
+        }
+
+        // Initialize music player when modal opens
+        const musicModal = document.getElementById('musicModal');
+        if (musicModal) {
+            musicModal.addEventListener('click', function(e) {
+                if (e.target === musicModal) {
+                    if (currentPlayingSong) {
+                        const audio = document.getElementById('musicPlayer-' + currentPlayingSong);
+                        const playButton = document.querySelector(`button[data-song="${currentPlayingSong}"]`);
+                        if (audio && !audio.paused) {
+                            audio.pause();
+                            if (playButton) playButton.textContent = '▶️';
+                        }
+                    }
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const activeModals = document.querySelectorAll('.modal-overlay.active');
+                activeModals.forEach(modal => {
+                    if (modal.id === 'aboutModal') {
+                        closeModal('about');
+                    } else if (modal.id === 'favoritesModal') {
+                        closeModal('favorites');
+                    } else if (modal.id === 'gamingModal') {
+                        closeModal('gaming');
+                    } else if (modal.id === 'musicModal') {
+                        if (currentPlayingSong) {
+                            const audio = document.getElementById('musicPlayer-' + currentPlayingSong);
+                            const playButton = document.querySelector(`button[data-song="${currentPlayingSong}"]`);
+                            if (audio && !audio.paused) {
+                                audio.pause();
+                                if (playButton) playButton.textContent = '▶️';
+                            }
+                        }
+                        closeModal('music');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
