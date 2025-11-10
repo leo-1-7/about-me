@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>About Leo Paul Yamaguchi</title>
     <style>
         * {
@@ -14,6 +14,18 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            height: 100%;
+            width: 100%;
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Loading Screen */
@@ -152,10 +164,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 0;
             padding: 20px;
             opacity: 0;
             animation: fadeIn 0.8s ease-in 0.5s forwards;
+            width: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -169,6 +185,10 @@
             flex-direction: column;
             gap: 25px;
             align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .main-button {
@@ -246,12 +266,15 @@
             width: 90%;
             max-width: 800px;
             min-height: 80vh;
+            max-height: 90vh;
             border-radius: 20px;
             padding: 50px;
             position: relative;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.4s ease;
             overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes slideUp {
@@ -300,7 +323,21 @@
         .modal-content {
             margin-top: 20px;
             overflow-y: auto;
+            overflow-x: hidden;
             padding-right: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Music modal content should use full available height */
+        .modal-music .modal-content {
+            max-height: calc(90vh - 200px);
+        }
+
+        /* Other modals */
+        .modal-about .modal-content,
+        .modal-favorites .modal-content,
+        .modal-gaming .modal-content {
+            max-height: calc(90vh - 150px);
         }
 
         .modal-content::-webkit-scrollbar {
@@ -609,27 +646,8 @@
         }
 
         .music-list {
-            max-height: 400px;
-            overflow-y: auto;
+            overflow: visible;
             padding-right: 10px;
-        }
-
-        .music-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .music-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        .music-list::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-        }
-
-        .music-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.4);
         }
 
         .song-item {
@@ -736,6 +754,84 @@
             margin-bottom: 15px;
         }
 
+        /* Unavailable Message Box */
+        .unavailable-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 10003;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            max-width: 400px;
+            border: 3px solid #ff6b6b;
+        }
+
+        .unavailable-message.show {
+            display: block;
+        }
+
+        .unavailable-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10002;
+            display: none;
+        }
+
+        .unavailable-overlay.show {
+            display: block;
+        }
+
+        .unavailable-close {
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .unavailable-close:hover {
+            background: #ee5a6f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Warning Message Box */
+        .warning-message {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            background: #ffcccc;
+            border: 2px solid #ff9999;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #cc0000;
+            font-weight: 500;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 2px 10px rgba(255, 0, 0, 0.1);
+        }
+
         .favorite-title {
             font-size: 20px;
             font-weight: 600;
@@ -801,6 +897,134 @@
                 font-size: 20px;
             }
         }
+
+        /* Portrait Orientation Styles */
+        @media (orientation: portrait) {
+            .main-content {
+                justify-content: center;
+                padding-top: 40px;
+                padding-bottom: 40px;
+            }
+
+            .button-container {
+                width: 100%;
+                max-width: 100%;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .main-button {
+                width: 90%;
+                max-width: 400px;
+            }
+
+            .warning-message {
+                width: 90%;
+                max-width: 400px;
+                bottom: 30px;
+            }
+
+            .modal-box {
+                width: 95%;
+                max-height: 85vh;
+                padding: 30px 20px;
+            }
+
+            .favorites-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .modal-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Landscape Orientation Styles */
+        @media (orientation: landscape) {
+            .main-content {
+                justify-content: center;
+                min-height: 100vh;
+            }
+
+            .button-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .main-button {
+                flex: 0 0 auto;
+                min-width: 200px;
+            }
+
+            .warning-message {
+                width: 100%;
+                max-width: 600px;
+                bottom: 30px;
+            }
+
+            .modal-box {
+                max-height: 95vh;
+                padding: 40px;
+            }
+
+            .favorites-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .modal-title {
+                font-size: 32px;
+            }
+
+            .progress-container {
+                bottom: 20%;
+            }
+        }
+
+        /* Landscape on mobile devices */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .main-content {
+                padding: 10px;
+            }
+
+            .button-container {
+                gap: 15px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .main-button {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+
+            .warning-message {
+                padding: 10px 15px;
+                font-size: 12px;
+                bottom: 20px;
+            }
+
+            .modal-box {
+                max-height: 98vh;
+                padding: 20px;
+            }
+
+            .modal-title {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -818,8 +1042,11 @@
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <div class="button-container">
-            <button class="main-button btn-about" onclick="openModal('about')">About Me</button>
+            <button class="main-button btn-about" onclick="showUnavailable()">About Me</button>
             <button class="main-button btn-favorites" onclick="openModal('favorites')">My Favorites</button>
+        </div>
+        <div class="warning-message">
+            THIS IS ISN'T OFFICIALLY FINISHED YET; I STILL HAVE MANY WORKS TO DO, SO I HAVE TO DISABLE IT
         </div>
     </div>
 
@@ -872,12 +1099,12 @@
                         <div class="favorite-title">Music</div>
                         <div class="favorite-description">When I'm sleeping, eating, walking, etc., I play this music.</div>
                     </div>
-                    <div class="favorite-card">
+                    <div class="favorite-card clickable" onclick="showUnavailable()">
                         <div class="favorite-icon">💻</div>
                         <div class="favorite-title">Technology</div>
                         <div class="favorite-description">Fascinated by the latest tech trends and innovations</div>
                     </div>
-                    <div class="favorite-card">
+                    <div class="favorite-card clickable" onclick="showUnavailable()">
                         <div class="favorite-icon">🌟</div>
                         <div class="favorite-title">Adventure</div>
                         <div class="favorite-description">Always ready for new experiences and challenges</div>
@@ -937,8 +1164,8 @@
                                     <button class="music-control-button" onclick="skipMusic('sabrina', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('sabrina')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-sabrina" preload="metadata">
-                                    <source src="Music/Sabrina Carpenter - When Did You Get Hot_ (Lyrics).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-sabrina" preload="metadata" controls style="display: none;">
+                                    <source src="Sabrina Carpenter - When Did You Get Hot_ (Lyrics).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-sabrina">
                                     <div class="music-progress-bar-wrapper">
@@ -962,8 +1189,8 @@
                                     <button class="music-control-button" onclick="skipMusic('positions', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('positions')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-positions" preload="metadata">
-                                    <source src="Music/Ariana Grande - positions (Lyrics).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-positions" preload="metadata" controls style="display: none;">
+                                    <source src="Ariana Grande - positions (Lyrics).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-positions">
                                     <div class="music-progress-bar-wrapper">
@@ -987,8 +1214,8 @@
                                     <button class="music-control-button" onclick="skipMusic('breakfree', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('breakfree')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-breakfree" preload="metadata">
-                                    <source src="Music/Ariana Grande - Break Free (Lyrics).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-breakfree" preload="metadata" controls style="display: none;">
+                                    <source src="Ariana Grande - Break Free (Lyrics).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-breakfree">
                                     <div class="music-progress-bar-wrapper">
@@ -1012,8 +1239,8 @@
                                     <button class="music-control-button" onclick="skipMusic('opalite', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('opalite')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-opalite" preload="metadata">
-                                    <source src="Music/Taylor Swift - Opalite (Lyrics).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-opalite" preload="metadata" controls style="display: none;">
+                                    <source src="Taylor Swift - Opalite (Lyrics).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-opalite">
                                     <div class="music-progress-bar-wrapper">
@@ -1037,8 +1264,8 @@
                                     <button class="music-control-button" onclick="skipMusic('opheila', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('opheila')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-opheila" preload="metadata">
-                                    <source src="Music/Taylor Swift - The Fate of Ophelia.mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-opheila" preload="metadata" controls style="display: none;">
+                                    <source src="Taylor Swift - The Fate of Ophelia.mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-opheila">
                                     <div class="music-progress-bar-wrapper">
@@ -1062,8 +1289,8 @@
                                     <button class="music-control-button" onclick="skipMusic('weeknd', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('weeknd')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-weeknd" preload="metadata">
-                                    <source src="Music/The Weeknd - Is There Someone Else_ (Audio).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-weeknd" preload="metadata" controls style="display: none;">
+                                    <source src="The Weeknd - Is There Someone Else_ (Audio).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-weeknd">
                                     <div class="music-progress-bar-wrapper">
@@ -1087,8 +1314,8 @@
                                     <button class="music-control-button" onclick="skipMusic('cooloff', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('cooloff')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-cooloff" preload="metadata">
-                                    <source src="Music/Cool Off - Yeng Constantino (Lyrics).mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-cooloff" preload="metadata" controls style="display: none;">
+                                    <source src="Cool Off - Yeng Constantino (Lyrics).mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-cooloff">
                                     <div class="music-progress-bar-wrapper">
@@ -1112,8 +1339,8 @@
                                     <button class="music-control-button" onclick="skipMusic('confident', 5)">+5s</button>
                                     <button class="music-control-button" onclick="restartMusic('confident')">🔄</button>
                                 </div>
-                                <audio id="musicPlayer-confident" preload="metadata">
-                                    <source src="Music/Justin Bieber - Confident (Lyrics) she said its her first time.mp3" type="audio/mpeg">
+                                <audio id="musicPlayer-confident" preload="metadata" controls style="display: none;">
+                                    <source src="Justin Bieber - Confident (Lyrics) she said its her first time.mp3" type="audio/mpeg">
                                 </audio>
                                 <div class="music-progress-container" id="musicProgressContainer-confident">
                                     <div class="music-progress-bar-wrapper">
@@ -1134,6 +1361,13 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Unavailable Message Box -->
+    <div class="unavailable-overlay" id="unavailableOverlay" onclick="closeUnavailable()"></div>
+    <div class="unavailable-message" id="unavailableMessage">
+        <div>UNFORTUNATELY UNAVAILABLE AT THIS TIME!</div>
+        <button class="unavailable-close" onclick="closeUnavailable()">OK</button>
     </div>
 
     <script>
@@ -1179,17 +1413,80 @@
             updatePercentage();
         });
 
+        // Orientation Detection and Handling
+        function detectOrientation() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const body = document.body;
+            const mainContent = document.getElementById('mainContent');
+            
+            // Remove existing orientation classes
+            body.classList.remove('portrait-mode', 'landscape-mode');
+            if (mainContent) {
+                mainContent.classList.remove('portrait-mode', 'landscape-mode');
+            }
+            
+            // Add appropriate class
+            if (isPortrait) {
+                body.classList.add('portrait-mode');
+                if (mainContent) {
+                    mainContent.classList.add('portrait-mode');
+                }
+            } else {
+                body.classList.add('landscape-mode');
+                if (mainContent) {
+                    mainContent.classList.add('landscape-mode');
+                }
+            }
+            
+            // Force reflow to ensure styles apply
+            if (mainContent) {
+                mainContent.style.display = 'none';
+                mainContent.offsetHeight; // Trigger reflow
+                mainContent.style.display = '';
+            }
+        }
+
+        // Detect orientation on load
+        window.addEventListener('load', function() {
+            detectOrientation();
+        });
+
+        // Detect orientation on resize and orientation change
+        window.addEventListener('resize', function() {
+            detectOrientation();
+        });
+
+        window.addEventListener('orientationchange', function() {
+            // Delay to ensure orientation change is complete
+            setTimeout(function() {
+                detectOrientation();
+            }, 100);
+        });
+
+        // Also detect on initial load with a small delay
+        setTimeout(function() {
+            detectOrientation();
+        }, 500);
+
         // Modal Functions
         function openModal(type) {
             const modal = document.getElementById(type + 'Modal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            if (modal) {
+                modal.classList.add('active');
+                // Only prevent body scroll, modal itself should scroll
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+            }
         }
 
         function closeModal(type) {
             const modal = document.getElementById(type + 'Modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
+            if (modal) {
+                modal.classList.remove('active');
+                // Restore scrolling
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+            }
             
             // Stop all music if closing music modal
             if (type === 'music') {
@@ -1226,6 +1523,29 @@
             setTimeout(function() {
                 window.location.href = 'about:blank';
             }, 100);
+        }
+
+        // Unavailable message functions
+        function showUnavailable() {
+            const overlay = document.getElementById('unavailableOverlay');
+            const message = document.getElementById('unavailableMessage');
+            if (overlay && message) {
+                overlay.classList.add('show');
+                message.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+            }
+        }
+
+        function closeUnavailable() {
+            const overlay = document.getElementById('unavailableOverlay');
+            const message = document.getElementById('unavailableMessage');
+            if (overlay && message) {
+                overlay.classList.remove('show');
+                message.classList.remove('show');
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+            }
         }
 
         // Music Player Functions
@@ -1273,6 +1593,21 @@
                         if (progressContainer) progressContainer.classList.remove('active');
                         currentPlayingSong = null;
                     });
+
+                    audio.addEventListener('error', function(e) {
+                        console.error('Error loading audio for', songId, ':', e);
+                        const playButton = document.querySelector(`button[data-song="${songId}"]`);
+                        if (playButton) {
+                            playButton.disabled = true;
+                            playButton.textContent = '❌';
+                            playButton.title = 'Audio file not found or cannot be loaded';
+                        }
+                    });
+
+                    audio.addEventListener('canplaythrough', function() {
+                        // Audio is ready to play
+                        console.log('Audio ready for', songId);
+                    });
                 }
             });
         });
@@ -1295,14 +1630,30 @@
             }
 
             if (audio.paused) {
-                audio.play();
-                playButton.textContent = '⏸️';
-                progressContainer.classList.add('active');
-                currentPlayingSong = songId;
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Audio started playing successfully
+                        playButton.textContent = '⏸️';
+                        if (progressContainer) progressContainer.classList.add('active');
+                        currentPlayingSong = songId;
+                    }).catch(error => {
+                        // Auto-play was prevented or failed
+                        console.error('Error playing audio:', error);
+                        alert('Unable to play audio. Please click the play button again or check if the file exists.');
+                        playButton.textContent = '▶️';
+                    });
+                } else {
+                    // Fallback for older browsers
+                    playButton.textContent = '⏸️';
+                    if (progressContainer) progressContainer.classList.add('active');
+                    currentPlayingSong = songId;
+                }
             } else {
                 audio.pause();
                 playButton.textContent = '▶️';
-                progressContainer.classList.remove('active');
+                if (progressContainer) progressContainer.classList.remove('active');
                 currentPlayingSong = null;
             }
         }
@@ -1352,6 +1703,13 @@
         // Close modal with Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
+                // Check if unavailable message is open
+                const unavailableMessage = document.getElementById('unavailableMessage');
+                if (unavailableMessage && unavailableMessage.classList.contains('show')) {
+                    closeUnavailable();
+                    return;
+                }
+                
                 const activeModals = document.querySelectorAll('.modal-overlay.active');
                 activeModals.forEach(modal => {
                     if (modal.id === 'aboutModal') {
