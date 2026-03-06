@@ -69,6 +69,58 @@
             visibility: hidden;
         }
 
+        /* Sleep mode overlay (10:00 PM - 5:00 AM) */
+        body.sleep-mode {
+            overflow: hidden !important;
+        }
+        .sleep-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.62);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 20000;
+            padding: 24px;
+            text-align: center;
+        }
+        .sleep-overlay.show {
+            display: flex;
+        }
+        .sleep-box {
+            width: min(520px, 95vw);
+            background: rgba(0, 0, 0, 0.92);
+            border-radius: 18px;
+            padding: 26px 22px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+        }
+        .sleep-title {
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+        .sleep-subtitle {
+            margin-top: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.6px;
+        }
+        .sleep-timer-line {
+            margin-top: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .sleep-timer-line span {
+            font-variant-numeric: tabular-nums;
+        }
+
         .progress-container {
             position: absolute;
             bottom: 30%;
@@ -345,6 +397,48 @@
             left: 50%;
             transform: translateX(-50%);
             bottom: 80px; /* Move main buttons lower so content sits closer to bottom */
+        }
+
+        .favorites-and-whatsnew-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .whats-new-icon-btn {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            min-height: 24px;
+            border-radius: 50%;
+            background: #888;
+            color: #000;
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .whats-new-icon-btn:hover {
+            background: #666;
+            transform: scale(1.05);
+        }
+        .whats-new-icon-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Keep buttons (including ?) hidden until intro finishes (30s) or Skip */
+        body.intro-pending .button-container {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        .button-container {
             z-index: 100;
             visibility: visible;
             opacity: 1;
@@ -2628,14 +2722,80 @@
             text-align: center;
         }
 
+        .otp-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .otp-input-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
         .otp-input {
-            padding: 10px 14px;
+            padding: 10px 44px 10px 14px;
             font-size: 16px;
-            width: 160px;
+            width: 210px;
             text-align: center;
             border-radius: 8px;
             border: 2px solid #bbb;
             outline: none;
+        }
+
+        /* Hide browser built-in password reveal/clear icons (prevents duplicate eye on the right) */
+        .otp-input::-ms-reveal,
+        .otp-input::-ms-clear {
+            display: none;
+        }
+
+        .otp-input::placeholder {
+            font-size: 14px;
+        }
+
+        .otp-eye-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            font-size: 16px;
+        }
+
+        .otp-eye-btn:hover {
+            background: rgba(0, 0, 0, 0.10);
+        }
+
+        .otp-eye-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 0, 0, 0.75);
+        }
+
+        /* Default state is hidden (password) => show closed-eye icon */
+        .otp-eye-btn .otp-eye-icon-open {
+            display: none;
+        }
+        .otp-eye-btn .otp-eye-icon-closed {
+            display: inline-flex;
+        }
+        .otp-eye-btn[data-state="shown"] .otp-eye-icon-open {
+            display: inline-flex;
+        }
+        .otp-eye-btn[data-state="shown"] .otp-eye-icon-closed {
+            display: none;
         }
 
         .otp-input:focus {
@@ -2643,7 +2803,6 @@
         }
 
         .otp-submit {
-            margin-left: 8px;
             padding: 10px 16px;
             font-size: 16px;
             font-weight: 600;
@@ -3769,7 +3928,7 @@
         }
     </style>
 </head>
-<body>
+<body class="intro-pending">
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen" style="cursor: pointer;">
         <div class="progress-container">
@@ -3779,6 +3938,15 @@
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="loading-message" id="loadingMessage" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Sleep Mode Overlay (10:00 PM - 5:00 AM) -->
+    <div class="sleep-overlay" id="sleepOverlay" role="dialog" aria-live="polite" aria-label="Website sleeping">
+        <div class="sleep-box">
+            <div class="sleep-title">MY WEBSITE IS CLOSED</div>
+            <div class="sleep-subtitle">WILL BE BACK ON</div>
+            <div class="sleep-timer-line"><span id="sleepTimer">00:00:00</span></div>
         </div>
     </div>
 
@@ -3793,17 +3961,20 @@
                 <span id="seconds">00</span><span class="time-label">S</span>
             </div>
         </div>
-        <div class="button-container" id="mainButtonContainer" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
+        <div class="button-container" id="mainButtonContainer" style="display: none;">
             <button class="main-button btn-about" onclick="openModal('about')">
                 <span class="christmas-deco-left">🎁</span>
                 <span class="christmas-deco-right">❄️</span>
                 About Me
             </button>
-            <button class="main-button btn-favorites" onclick="openModal('favorites')">
-                <span class="christmas-deco-left">⛄</span>
-                <span class="christmas-deco-right">🎀</span>
-                My Favorites
-            </button>
+            <div class="favorites-and-whatsnew-row">
+                <button class="main-button btn-favorites" onclick="openModal('favorites')">
+                    <span class="christmas-deco-left">⛄</span>
+                    <span class="christmas-deco-right">🎀</span>
+                    My Favorites
+                </button>
+                <button type="button" class="whats-new-icon-btn" onclick="openModal('updates')" title="What's New">?</button>
+            </div>
         </div>
         <div class="update-button-container hidden" id="updateButtonContainer" style="display: none !important;">
             <div id="comingSoonMainLink" class="christmas-message-link-wrapper" style="display:none;">
@@ -3811,7 +3982,6 @@
                     MESSAGE FOR MYSELF
                 </div>
             </div>
-            <button class="main-button btn-updates" onclick="openModal('updates')">WHAT'S NEW</button>
         </div>
         <div class="warning-message" id="mainWarning" style="display: none;">
             THIS ISN'T OFFICIALLY FINISHED YET; I STILL HAVE MANY WORKS TO DO
@@ -3861,17 +4031,36 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         <span class="access-gate-link" id="showOtpLink">Click here</span>
                     </div>
                     <div class="otp-container" id="otpContainer">
-                        <input
-                            id="otpInput"
-                            class="otp-input"
-                            type="text"
-                            inputmode="numeric"
-                            pattern="[0-9]*"
-                            autocomplete="one-time-code"
-                            placeholder="Enter one-time PIN"
-                            maxlength="4"
-                        />
-                        <button class="otp-submit" id="otpSubmit">Submit</button>
+                        <div class="otp-row">
+                            <div class="otp-input-wrap">
+                                <button type="button" class="otp-eye-btn" id="otpEyeBtn" data-state="hidden" aria-label="Show PIN" title="Show PIN">
+                                    <span class="otp-eye-icon otp-eye-icon-open" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </span>
+                                    <span class="otp-eye-icon otp-eye-icon-closed" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <path d="M4 4l16 16"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                                <input
+                                    id="otpInput"
+                                    class="otp-input"
+                                    type="password"
+                                    inputmode="numeric"
+                                    pattern="[0-9]*"
+                                    autocomplete="one-time-code"
+                                    placeholder="Enter one-time PIN"
+                                    maxlength="4"
+                                />
+                            </div>
+                            <button class="otp-submit" id="otpSubmit">Submit</button>
+                        </div>
                         <div class="otp-feedback" id="otpFeedback"></div>
                     </div>
                 </div>
@@ -3883,7 +4072,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         </div>
                         <div class="info-item">
                             <div class="info-label">Age</div>
-                            <div class="info-value">17 Years Old</div>
+                            <div class="info-value">18 Years Old</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Birth Date</div>
@@ -4053,6 +4242,16 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         <div class="favorite-title">My Apps</div>
                         <div class="favorite-description">This is my apps that i created right now</div>
                     </div>
+                    <div class="favorite-card clickable" onclick="showNotAvailableNow()">
+                        <div class="favorite-icon">⌛</div>
+                        <div class="favorite-title">COMING SOON</div>
+                        <div class="favorite-description">STAY TUNED</div>
+                    </div>
+                    <div class="favorite-card clickable" onclick="showNotAvailableNow()">
+                        <div class="favorite-icon">⌛</div>
+                        <div class="favorite-title">COMING SOON</div>
+                        <div class="favorite-description">STAY TUNED</div>
+                    </div>
                 </div>
                 <div id="christmasMessageDisplay" style="display:none; margin-top: 30px; padding: 20px; background: #fff5f5; border-radius: 12px; border: 2px solid #ffcdd2;">
                     <h3 style="text-align: center; color: #b71c1c; margin-bottom: 15px;">Your Christmas Message</h3>
@@ -4092,7 +4291,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
     </div>
 
     <!-- My Apps Modal -->
-    <div class="modal-overlay" id="myAppsModal" onclick="closeModalOnOverlay(event, 'myApps')">
+    <div class="modal-overlay" id="myAppsModal">
         <div class="modal-box modal-myapps">
             <button class="close-button" onclick="closeModal('myApps')" title="Close">×</button>
             <h1 class="modal-title">My Apps</h1>
@@ -4103,14 +4302,14 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                     <span class="myapps-app-label">Calculator</span>
                 </div>
                 <div class="modal-buttons">
-                    <button class="modal-action-button btn-back" onclick="closeModal('myApps')">Close</button>
+                    <button class="modal-action-button btn-exit" onclick="exitPage('myApps')">Exit</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Calculator Modal: put calculator.html in same folder as index.html -->
-    <div class="modal-overlay" id="calculatorModal" onclick="closeModalOnOverlay(event, 'calculator')">
+    <div class="modal-overlay" id="calculatorModal">
         <div class="modal-box modal-calculator" onclick="event.stopPropagation()">
             <div class="modal-content modal-calculator-content">
                 <button type="button" class="calculator-close-btn" onclick="closeModal('calculator')" title="Close">×</button>
@@ -4762,7 +4961,55 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
             <div class="modal-content">
                 <h2 style="text-align: center; font-size: 28px; margin-bottom: 20px; color: #333; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">WHAT'S NEW</h2>
                 <div class="updates-scroll-body">
-                    <p style="margin-top: 20px;"><strong>UPDATE 1</strong></p>
+                    <p style="margin-top: 20px;"><strong>UPDATE 1.2</strong></p>
+                    <p id="update12-summary" style="margin-bottom: 8px;">
+                        These are the updates and fixes
+                        <span id="update12-toggle-top" class="see-more-link" onclick="toggleUpdate12Details()">see more...</span>
+                    </p>
+                    <div id="update12-details" style="display:none; margin-bottom: 15px;">
+                        <p><strong>⏳ MAIN MENU</strong></p>
+                        <p>Adjusted the timer</p>
+                        <p>Fixed the buttons because they were delayed when clicked</p>
+                        <p>Fixed the duplicated "X" button</p>
+                        <p>Fixed the green buttons in the About Me section</p>
+                        <p>Changed the What's New button into (?)</p>
+                        
+                        <p style="margin-top: 20px;"><strong>💙 MY FAVORITES</strong></p>
+                        <p>Added 2 "Coming Soon"</p>
+                        <p>Added My Apps section</p>
+                        <p>Added a calculator (currently under development)</p>
+                        <p>Fixed the music playback and adjusted the volume</p>
+                        <p>Fixed the scrolling effect</p>
+                        <p>Fixed the delayed response when clicking buttons</p>
+
+                        <p style="margin-top: 20px;"><strong>🚫 WEBSITE CLOSE</strong></p>
+                        <p>Added Website Close to my website (active from 10 PM to 5 AM)</p>
+                        <p>Improved button responsiveness</p>
+
+                        <p style="margin-top: 20px;"><strong>🐛 BUGS, ERRORS AND OTHERS</strong></p>
+                        <p>You may still encounter some glitches, bugs, or errors, but I will fix them as soon as I find them</p>
+                        <p>Thank you for answering my form</p>
+                        <p>7 people asked me to create a calculator, so I made one</p>
+                        <p>Thank you, and see you in the next update
+                            <span id="update12-toggle-bottom" class="see-more-link" onclick="toggleUpdate12Details()">see less...</span>
+                        </p>
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>UPDATE 1.1 [FIXED]</strong></p>
+                    <p id="update11-summary" style="font-style: italic; font-size: 16px; margin-bottom: 10px; color: #555;">
+                        These fixes are now applied in this version
+                        <span id="update11-toggle-top" class="see-more-link" onclick="toggleUpdate11Details()">see more...</span>
+                    </p>
+                    <div id="update11-details" style="display:none; margin-bottom: 10px;">
+                        <p>Fixed the blue button, because it's too big</p>
+                        <p>Fixed the title "Facebook, Instagram, etc." so it is no longer clickable and is displayed as plain text</p>
+                        <p>Fixed the scrolling effect on "Songs" and "What's New" because it wasn't supposed to scroll that way</p>
+                        <p>Overall improvements and small fixes have been applied
+                            <span id="update11-toggle-bottom" class="see-more-link" onclick="toggleUpdate11Details()">see less...</span>
+                        </p>
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>UPDATE 1.0</strong></p>
                     <p id="update1-summary" style="margin-bottom: 8px;">
                         UI REFORGE + MUSIC SYSTEM UPGRADE
                         <span id="update1-toggle-top" class="see-more-link" onclick="toggleUpdateDetails()">see more...</span>
@@ -4816,24 +5063,8 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         </p>
                     </div>
 
-                    <p style="margin-top: 20px;"><strong>UPDATE 1.1 [FIXED]</strong></p>
-                    <p id="update11-summary" style="font-style: italic; font-size: 16px; margin-bottom: 10px; color: #555;">
-                        These fixes are now applied in this version
-                        <span id="update11-toggle-top" class="see-more-link" onclick="toggleUpdate11Details()">see more...</span>
-                    </p>
-                    <div id="update11-details" style="display:none; margin-bottom: 10px;">
-                        <p>Fixed the blue button, because it's too big</p>
-                        <p>Fixed the title “Facebook, Instagram, etc.” so it is no longer clickable and is displayed as plain text</p>
-                        <p>Fixed the scrolling effect on “Songs” and “What's New” because it wasn't supposed to scroll that way</p>
-                        <p>Overall improvements and small fixes have been applied
-                            <span id="update11-toggle-bottom" class="see-more-link" onclick="toggleUpdate11Details()">see less...</span>
-                        </p>
-                    </div>
-
                     <p style="margin-top: 20px;"><strong>🚫 BUGS AND ERRORS</strong></p>
                     <P>My sincerely apologies for the errors and bugs. I'm currently working on fixing them.</p>
-                    <p>It's just a bit difficult since I have school and we have our research defense going on right now, but I will fix everything as soon as I'm free again.</p>
-                    <p></p>Thank you for understanding and see you soon...</p>
 
                     <p style="margin-top: 20px;"><strong>📩 Your Response</strong></p>
                     <p>I received you all response on my form and most of it i applied it here</p>
@@ -4844,7 +5075,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
     </div>
 
     <!-- Singer Modal -->
-    <div class="modal-overlay" id="singerModal" onclick="closeModalOnOverlay(event, 'singer')">
+    <div class="modal-overlay" id="singerModal">
         <div class="modal-box modal-singer">
             <button class="close-button-left" onclick="closeModal('singer')" title="Close">×</button>
             <div class="modal-content">
@@ -5016,7 +5247,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
     </div>
 
     <!-- Unavailable Message Box -->
-    <div class="unavailable-overlay" id="unavailableOverlay" onclick="closeUnavailable()"></div>
+    <div class="unavailable-overlay" id="unavailableOverlay"></div>
     <div class="unavailable-message" id="unavailableMessage">
         <div>UNFORTUNATELY UNAVAILABLE AT THIS TIME!</div>
         <button class="unavailable-close" onclick="closeUnavailable()">OK</button>
@@ -5037,7 +5268,134 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
             const totalSteps = duration / updateInterval;
             let currentStep = 0;
             let loadingStarted = false;
-            
+
+            // Sleep mode (10:00 PM - 5:00 AM) — use server time so changing device clock cannot bypass
+            const sleepOverlay = document.getElementById('sleepOverlay');
+            const sleepTimerEl = document.getElementById('sleepTimer');
+            const mainContentEl = document.getElementById('mainContent');
+            const introBoxEl = document.getElementById('introBox');
+
+            function isSleepWindow(d) {
+                const h = d.getHours();
+                return h >= 22 || h < 5;
+            }
+            function getSleepEndTime(d) {
+                const end = new Date(d);
+                if (d.getHours() >= 22) {
+                    end.setDate(end.getDate() + 1);
+                }
+                end.setHours(5, 0, 0, 0);
+                return end;
+            }
+            function formatHMS(totalSeconds) {
+                const s = Math.max(0, Math.floor(totalSeconds));
+                const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+                const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+                const ss = String(s % 60).padStart(2, '0');
+                return hh + ':' + mm + ':' + ss;
+            }
+            // Fetch real time from API so device time changes are ignored
+            function getServerTime() {
+                return fetch('https://worldtimeapi.org/api/ip', { cache: 'no-store' })
+                    .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                    .then(function(data) { return data && data.datetime ? new Date(data.datetime) : null; })
+                    .catch(function() { return null; });
+            }
+            function showSleepMode() {
+                if (sleepOverlay) sleepOverlay.classList.add('show');
+                document.body.classList.add('sleep-mode');
+                try {
+                    if (typeof pauseBgMusic === 'function') pauseBgMusic(false);
+                } catch {}
+            }
+            function hideSleepMode() {
+                if (sleepOverlay) sleepOverlay.classList.remove('show');
+                document.body.classList.remove('sleep-mode');
+            }
+            function startSleepLoop(initialServerTime) {
+                if (!sleepOverlay || !sleepTimerEl) return;
+                showSleepMode();
+                var lastServerTime = initialServerTime || new Date();
+                var lastServerTimeFetchedAt = Date.now();
+                var refreshIntervalMs = 60000;
+
+                function getCurrentServerTime() {
+                    var elapsed = Date.now() - lastServerTimeFetchedAt;
+                    return new Date(lastServerTime.getTime() + elapsed);
+                }
+                function tick() {
+                    if (Date.now() - lastServerTimeFetchedAt > refreshIntervalMs) {
+                        getServerTime().then(function(d) {
+                            if (d) {
+                                lastServerTime = d;
+                                lastServerTimeFetchedAt = Date.now();
+                            }
+                        });
+                    }
+                    var now = getCurrentServerTime();
+                    if (!isSleepWindow(now)) {
+                        hideSleepMode();
+                        // Wake up: show main UI (intro already finished/skipped)
+                        const mainWarningEl = document.getElementById('mainWarning');
+                        const formLinkBelowEl = document.getElementById('formLinkBelow');
+                        const warningTimerLineEl = document.getElementById('warningTimerLine');
+                        const updatingMsgEl2 = document.getElementById('updatingMsg');
+                        if (mainWarningEl) {
+                            mainWarningEl.style.display = '';
+                            if (formLinkBelowEl) formLinkBelowEl.style.display = '';
+                            if (countdownAlreadyDone) {
+                                if (warningTimerLineEl) warningTimerLineEl.style.display = 'none';
+                                if (updatingMsgEl2) updatingMsgEl2.style.display = 'block';
+                            } else {
+                                if (warningTimerLineEl) warningTimerLineEl.style.display = '';
+                                if (updatingMsgEl2) updatingMsgEl2.style.display = 'none';
+                            }
+                        }
+                        try { enableMusicMiniButton(); } catch {}
+                        try { showUpdatesButton(); } catch {}
+                        try { showMainButtons(); } catch {}
+                        setTimeout(function() {
+                            try { startBgMusic(); } catch {}
+                        }, 100);
+                        return;
+                    }
+                    var end = getSleepEndTime(now);
+                    var diff = Math.floor((end.getTime() - now.getTime()) / 1000);
+                    sleepTimerEl.textContent = formatHMS(diff);
+                }
+                tick();
+                setInterval(tick, 1000);
+                window.addEventListener('focus', tick);
+            }
+            function checkSleepThenShowUI(callbackIfAwake) {
+                getServerTime().then(function(serverDate) {
+                    var now = serverDate || new Date();
+                    if (isSleepWindow(now)) {
+                        if (introBox) {
+                            introBox.classList.add('fade-out');
+                            setTimeout(function() { if (introBox) introBox.style.display = 'none'; }, 900);
+                        }
+                        startSleepLoop(now);
+                    } else {
+                        if (callbackIfAwake) callbackIfAwake();
+                    }
+                });
+            }
+            var sleepMonitorInterval = null;
+            function startSleepMonitor() {
+                if (sleepMonitorInterval) return;
+                sleepMonitorInterval = setInterval(function() {
+                    if (!sleepOverlay || sleepOverlay.classList.contains('show')) return;
+                    getServerTime().then(function(serverDate) {
+                        var now = serverDate || new Date();
+                        if (isSleepWindow(now)) {
+                            if (introBox) introBox.style.display = 'none';
+                            startSleepLoop(now);
+                        }
+                    });
+                }, 30000);
+            }
+
             // Function to start loading when clicked
             function startLoading() {
                 if (loadingStarted) return;
@@ -5123,6 +5481,8 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
             }
             
             function showMainButtons() {
+                document.body.classList.remove('intro-pending');
+                startSleepMonitor();
                 const mainButtonContainer = document.getElementById('mainButtonContainer');
                 const countdownContainer = document.getElementById('countdownContainer');
                 if (mainButtonContainer) {
@@ -5138,10 +5498,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                 }
             }
             
-            // Show buttons immediately after load
-            setTimeout(function() {
-                showMainButtons();
-            }, 100);
+            // Don't show main buttons until intro finishes (30s) or user skips
 
             // Countdown Timer Function
             function startCountdown() {
@@ -5291,28 +5648,24 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                             startWarningCountdown();
                             // Auto fade after 30s if not skipped
                             introHideTimer = setTimeout(function() {
-                                // Show buttons and timer immediately
-                                if (mainWarning) {
-                                    mainWarning.style.display = '';
-                                    if (formLinkBelow) formLinkBelow.style.display = '';
-                                    if (countdownAlreadyDone) {
-                                        if (warningTimerLine) warningTimerLine.style.display = 'none';
-                                        if (updatingMsgEl) updatingMsgEl.style.display = 'block';
+                                checkSleepThenShowUI(function() {
+                                    if (mainWarning) {
+                                        mainWarning.style.display = '';
+                                        if (formLinkBelow) formLinkBelow.style.display = '';
+                                        if (countdownAlreadyDone) {
+                                            if (warningTimerLine) warningTimerLine.style.display = 'none';
+                                            if (updatingMsgEl) updatingMsgEl.style.display = 'block';
+                                        }
                                     }
-                                }
-                                enableMusicMiniButton();
-                                showUpdatesButton();
-                                showMainButtons();
-                                // Start music with a small delay to ensure user interaction is registered
-                                setTimeout(function() {
-                                    startBgMusic();
-                                }, 100);
-                                
-                                // Then fade out intro box
-                                introBox.classList.add('fade-out');
-                                setTimeout(function() {
-                                    introBox.style.display = 'none';
-                                }, 900);
+                                    enableMusicMiniButton();
+                                    showUpdatesButton();
+                                    showMainButtons();
+                                    setTimeout(function() { try { startBgMusic(); } catch {} }, 100);
+                                    if (introBox) {
+                                        introBox.classList.add('fade-out');
+                                        setTimeout(function() { if (introBox) introBox.style.display = 'none'; }, 900);
+                                    }
+                                });
                             }, 30000);
                             if (introSkip) {
                                 introSkip.addEventListener('click', function() {
@@ -5320,31 +5673,27 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                                         clearTimeout(introHideTimer);
                                         introHideTimer = null;
                                     }
-                                    // Show buttons and timer immediately
-                                    if (mainWarning) {
-                                        mainWarning.style.display = '';
-                                        if (formLinkBelow) formLinkBelow.style.display = '';
-                                        if (countdownAlreadyDone) {
-                                            if (warningTimerLine) warningTimerLine.style.display = 'none';
-                                            if (updatingMsgEl) updatingMsgEl.style.display = 'block';
-                                        } else {
-                                            if (warningTimerLine) warningTimerLine.style.display = '';
-                                            if (updatingMsgEl) updatingMsgEl.style.display = 'none';
+                                    checkSleepThenShowUI(function() {
+                                        if (mainWarning) {
+                                            mainWarning.style.display = '';
+                                            if (formLinkBelow) formLinkBelow.style.display = '';
+                                            if (countdownAlreadyDone) {
+                                                if (warningTimerLine) warningTimerLine.style.display = 'none';
+                                                if (updatingMsgEl) updatingMsgEl.style.display = 'block';
+                                            } else {
+                                                if (warningTimerLine) warningTimerLine.style.display = '';
+                                                if (updatingMsgEl) updatingMsgEl.style.display = 'none';
+                                            }
                                         }
-                                    }
-                                    enableMusicMiniButton();
-                                    showUpdatesButton();
-                                    showMainButtons();
-                                    // Start music with a small delay to ensure user interaction is registered
-                                    setTimeout(function() {
-                                        startBgMusic();
-                                    }, 100);
-                                    
-                                    // Then fade out intro box
-                                    introBox.classList.add('fade-out');
-                                    setTimeout(function() {
-                                        introBox.style.display = 'none';
-                                    }, 900);
+                                        enableMusicMiniButton();
+                                        showUpdatesButton();
+                                        showMainButtons();
+                                        setTimeout(function() { try { startBgMusic(); } catch {} }, 100);
+                                        if (introBox) {
+                                            introBox.classList.add('fade-out');
+                                            setTimeout(function() { if (introBox) introBox.style.display = 'none'; }, 900);
+                                        }
+                                    });
                                 });
                             }
                         } else {
@@ -5382,17 +5731,17 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                     if (updatingMsgEl) updatingMsgEl.style.display = 'block';
                     return;
                 }
-                // Determine target for updates: March 15, 2026 at 12:00 AM local time
+                // Determine target for updates: April 30, 2026 at 12:00 AM local time
                 // Use local time to ensure it matches the user's clock
                 if (!targetNov15) {
-                    // month index: 2 = March, day: 15, hour 0, minute 0, second 0
-                    targetNov15 = new Date(2026, 2, 15, 0, 0, 0);
+                    // month index: 3 = April, day: 30, hour 0, minute 0, second 0
+                    targetNov15 = new Date(2026, 3, 30, 0, 0, 0);
                 }
                 function updateCountdown() {
                     // Always use current local time
                     const now = new Date();
                     // Recalculate target to ensure it uses local timezone
-                    const targetDate = new Date(2026, 2, 15, 0, 0, 0);
+                    const targetDate = new Date(2026, 3, 30, 0, 0, 0);
                     let diff = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
                     if (diff < 0) diff = 0;
                     if (warningTimerEl) warningTimerEl.textContent = formatDhms(diff);
@@ -5438,6 +5787,17 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
             const details = document.getElementById('update11-details');
             const topToggle = document.getElementById('update11-toggle-top');
             const bottomToggle = document.getElementById('update11-toggle-bottom');
+            if (!details || !topToggle || !bottomToggle) return;
+            const isHidden = details.style.display === 'none' || details.style.display === '';
+            details.style.display = isHidden ? 'block' : 'none';
+            topToggle.style.display = isHidden ? 'none' : 'inline';
+            bottomToggle.style.display = isHidden ? 'inline' : 'none';
+        }
+
+        function toggleUpdate12Details() {
+            const details = document.getElementById('update12-details');
+            const topToggle = document.getElementById('update12-toggle-top');
+            const bottomToggle = document.getElementById('update12-toggle-bottom');
             if (!details || !topToggle || !bottomToggle) return;
             const isHidden = details.style.display === 'none' || details.style.display === '';
             details.style.display = isHidden ? 'block' : 'none';
@@ -5609,6 +5969,21 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                 message.classList.add('show');
                 document.body.style.overflow = 'hidden';
                 document.documentElement.style.overflow = 'hidden';
+            }
+        }
+
+        function showNotAvailableNow() {
+            const overlay = document.getElementById('unavailableOverlay');
+            const message = document.getElementById('unavailableMessage');
+            if (overlay && message) {
+                const msgText = message.querySelector('div');
+                if (msgText) msgText.textContent = 'NOT AVAILABLE RIGHT NOW';
+                overlay.classList.add('show');
+                message.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+            } else {
+                alert('NOT AVAILABLE RIGHT NOW');
             }
         }
 
@@ -7194,6 +7569,7 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
             const showLink = document.getElementById('showOtpLink');
             const otpContainer = document.getElementById('otpContainer');
             const otpInput = document.getElementById('otpInput');
+            const otpEyeBtn = document.getElementById('otpEyeBtn');
             const otpSubmit = document.getElementById('otpSubmit');
             const otpFeedback = document.getElementById('otpFeedback');
             const personalBox = document.getElementById('personalInfoBox');
@@ -7237,6 +7613,18 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                 otpInput.focus();
             });
 
+            // Toggle PIN visibility (eye button)
+            if (otpEyeBtn) {
+                otpEyeBtn.addEventListener('click', function() {
+                    const isHidden = otpInput.type === 'password';
+                    otpInput.type = isHidden ? 'text' : 'password';
+                    otpEyeBtn.setAttribute('data-state', isHidden ? 'shown' : 'hidden');
+                    otpEyeBtn.setAttribute('aria-label', isHidden ? 'Hide PIN' : 'Show PIN');
+                    otpEyeBtn.title = isHidden ? 'Hide PIN' : 'Show PIN';
+                    otpInput.focus();
+                });
+            }
+
             // Clicking the Personal Details button only reveals the access gate (no direct access)
             if (personalToggleBtn) {
                 personalToggleBtn.addEventListener('click', function() {
@@ -7248,6 +7636,12 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         otpContainer.style.display = 'none';
                         otpInput.value = '';
                         otpFeedback.textContent = '';
+                        if (otpEyeBtn) {
+                            otpInput.type = 'password';
+                            otpEyeBtn.setAttribute('data-state', 'hidden');
+                            otpEyeBtn.setAttribute('aria-label', 'Show PIN');
+                            otpEyeBtn.title = 'Show PIN';
+                        }
                         // rotate to indicate open
                         personalToggleBtn.classList.add('rotated');
                     } else {
