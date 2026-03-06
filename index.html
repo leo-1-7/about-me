@@ -3159,11 +3159,17 @@
                 position: relative;
             }
 
-            .button-container .main-button.btn-about {
-                width: calc(100% - 36px);
-                max-width: calc(100% - 36px);
-                margin-left: auto;
-                margin-right: auto;
+            .favorites-and-whatsnew-row {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            .favorites-and-whatsnew-row .main-button.btn-favorites {
+                width: 100%;
+                max-width: 100%;
+                flex: 1 1 100%;
+            }
+            .favorites-and-whatsnew-row .whats-new-icon-btn {
+                flex-shrink: 0;
             }
 
             .main-button::after {
@@ -4998,10 +5004,11 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                     <div id="update12-details" style="display:none; margin-bottom: 15px;">
                         <p><strong>⏳ MAIN MENU</strong></p>
                         <p>Adjusted the timer</p>
+                        <p>Changed the What's New button into (?)</p>
                         <p>Fixed the buttons because they were delayed when clicked</p>
                         <p>Fixed the duplicated "X" button</p>
                         <p>Fixed the green buttons in the About Me section</p>
-                        <p>Changed the What's New button into (?)</p>
+                        <p>Fixed the timer in "Updates In", beacause changing the device time in the settings affected the timer</p>
                         
                         <p style="margin-top: 20px;"><strong>💙 MY FAVORITES</strong></p>
                         <p>Added 2 "Coming Soon"</p>
@@ -5356,18 +5363,27 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                 showSleepMode();
                 var lastServerTime = initialServerTime || new Date();
                 var lastServerTimeFetchedAt = Date.now();
+                var lastServerTimeFetchedAtPerformance = (typeof performance !== 'undefined' && performance.now) ? performance.now() : null;
                 var refreshIntervalMs = 60000;
 
                 function getCurrentServerTime() {
+                    if (lastServerTimeFetchedAtPerformance !== null && typeof performance !== 'undefined' && performance.now) {
+                        var elapsed = performance.now() - lastServerTimeFetchedAtPerformance;
+                        return new Date(lastServerTime.getTime() + elapsed);
+                    }
                     var elapsed = Date.now() - lastServerTimeFetchedAt;
                     return new Date(lastServerTime.getTime() + elapsed);
                 }
                 function tick() {
-                    if (Date.now() - lastServerTimeFetchedAt > refreshIntervalMs) {
+                    var shouldRefresh = lastServerTimeFetchedAtPerformance !== null && typeof performance !== 'undefined' && performance.now
+                        ? (performance.now() - lastServerTimeFetchedAtPerformance > refreshIntervalMs)
+                        : (Date.now() - lastServerTimeFetchedAt > refreshIntervalMs);
+                    if (shouldRefresh) {
                         getServerTime().then(function(d) {
                             if (d) {
                                 lastServerTime = d;
                                 lastServerTimeFetchedAt = Date.now();
+                                lastServerTimeFetchedAtPerformance = (typeof performance !== 'undefined' && performance.now) ? performance.now() : null;
                             }
                         });
                     }
@@ -5812,8 +5828,16 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
 
             var updatesCountdownServerNow = null;
             var updatesCountdownServerFetchedAt = null;
+            var updatesCountdownFetchedAtPerformance = null;
             var updatesCountdownTargetDate = null;
             var updatesCountdownRefreshMs = 60000;
+
+            function getCountdownNow() {
+                if (updatesCountdownServerNow === null || updatesCountdownFetchedAtPerformance === null) return null;
+                if (typeof performance === 'undefined' || !performance.now) return null;
+                var elapsed = performance.now() - updatesCountdownFetchedAtPerformance;
+                return new Date(updatesCountdownServerNow.getTime() + elapsed);
+            }
 
             function startWarningCountdown() {
                 if (!warningTimerEl) return;
@@ -5842,41 +5866,47 @@ FEEL FREE TO EXPLORE, AND ENJOY YOUR STAY!
                         }
                         return now;
                     }
-                    if (updatesCountdownServerNow && updatesCountdownServerFetchedAt !== null) {
-                        var elapsed = Date.now() - updatesCountdownServerFetchedAt;
-                        if (elapsed > updatesCountdownRefreshMs) {
+                    if (updatesCountdownServerNow !== null && updatesCountdownFetchedAtPerformance !== null) {
+                        var elapsedMs = (typeof performance !== 'undefined' && performance.now) ? (performance.now() - updatesCountdownFetchedAtPerformance) : 0;
+                        if (elapsedMs > updatesCountdownRefreshMs) {
                             getServerTimeWithOffset().then(function(data) {
                                 if (data) {
                                     updatesCountdownServerNow = data.now;
                                     updatesCountdownServerFetchedAt = Date.now();
+                                    updatesCountdownFetchedAtPerformance = (typeof performance !== 'undefined' && performance.now) ? performance.now() : null;
                                     if (data.utcOffset && !updatesCountdownTargetDate) {
                                         var targetStr = '2026-04-30T00:00:00' + data.utcOffset;
                                         updatesCountdownTargetDate = new Date(targetStr);
                                     }
                                 }
-                                setDiffFromNow(new Date(updatesCountdownServerNow.getTime() + (Date.now() - updatesCountdownServerFetchedAt)));
+                                var now = getCountdownNow();
+                                if (now) setDiffFromNow(now);
                             });
                             return;
                         }
-                        var now = new Date(updatesCountdownServerNow.getTime() + (Date.now() - updatesCountdownServerFetchedAt));
-                        setDiffFromNow(now);
+                        var now = getCountdownNow();
+                        if (now) setDiffFromNow(now);
                     } else {
-                        setDiffFromNow(new Date());
+                        var pending = getCountdownNow();
+                        if (pending) setDiffFromNow(pending);
                         getServerTimeWithOffset().then(function(data) {
                             if (data) {
                                 updatesCountdownServerNow = data.now;
                                 updatesCountdownServerFetchedAt = Date.now();
+                                updatesCountdownFetchedAtPerformance = (typeof performance !== 'undefined' && performance.now) ? performance.now() : null;
                                 if (data.utcOffset) {
                                     var targetStr = '2026-04-30T00:00:00' + data.utcOffset;
                                     updatesCountdownTargetDate = new Date(targetStr);
                                 }
-                                var now = new Date(updatesCountdownServerNow.getTime() + (Date.now() - updatesCountdownServerFetchedAt));
-                                setDiffFromNow(now);
+                                var now = getCountdownNow();
+                                if (now) setDiffFromNow(now);
                             } else {
                                 if (!updatesCountdownTargetDate) updatesCountdownTargetDate = new Date(2026, 3, 30, 0, 0, 0);
                                 updatesCountdownServerNow = new Date();
                                 updatesCountdownServerFetchedAt = Date.now();
-                                setDiffFromNow(new Date());
+                                updatesCountdownFetchedAtPerformance = (typeof performance !== 'undefined' && performance.now) ? performance.now() : null;
+                                var now = getCountdownNow();
+                                if (now) setDiffFromNow(now);
                             }
                         });
                     }
